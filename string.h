@@ -17,6 +17,7 @@ class string
     
     public:
         friend std::ostream& operator<<(std::ostream& flux,const string& st);
+        friend std::istream& operator>>(std::istream& flux, string& st);
         void operator=(const string& st) { copy(st.String); }
         void operator=(const char* st) { copy(st); }
         const char operator[](const int& pos) { return String[pos]; }

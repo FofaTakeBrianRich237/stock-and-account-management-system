@@ -21,6 +21,7 @@ void Account::copy(const Account& other)
     this->Name = other.Name;
     this->ID = other.ID;
     this->status = other.status;
+    this->WCAID = other.WCAID;
 }
 
 void Costumer::operator=(const Costumer& other)
@@ -60,18 +61,20 @@ std::ostream& operator<<(std::ostream& flux, const Status& status)
 {
     if(status == Status::Admin) flux << "ADMIN USER";
     else if(status == Status::Simp) flux << "SIMPLE USER";
-    else flux << "COSTUMER";
+    else if(status == Status::Cos) flux << "COSTUMER";
+    else flux << "PROPRIETOR";
 
     return flux;
 }
 
-void Costumer::operator()(const string& name, const int& age, const string& DB, const string& RD, const string& Id)
+void Costumer::operator()(const string& name, const int& age, const string& DB, const string& RD, const string& wacid ,const string& Id)
 {
     this->status = Status::Cos;
     this->Name = name;
     this->Age = age;
     this->DateofBirth = DB;
     this->RegistrationDate = RD;
+    this->WCAID = wacid;
     if(Id == "none") 
     {
         // std::thread GenerateCId(&Account::IdGeneration,*this,Costumer::NumberofCostumers,Costumer::UnusedCId,this->status);
@@ -81,12 +84,13 @@ void Costumer::operator()(const string& name, const int& age, const string& DB, 
     else ID = Id;
 }
 
-void User::operator()(const string& name, const string& DB, const int& age, const Status& stat, const string& Id)
+void User::operator()(const string& name, const string& DB, const int& age, const string& wcaid,const Status& stat, const string& Id)
 {
     this->status = stat;
     this->Age = age;
     this->DateofBirth = DB;
     this->Name = name;
+    this->WCAID = wcaid;
     if(Id == "none") Account::IdGeneration(*this,User::NumUsers,User::UnusedUId,this->status);
     else ID = Id;
 }
@@ -98,6 +102,7 @@ void Account::ADisplayInfos()
     cout << "Date of birth : " << this->DateofBirth << endl;
     cout << "Id : " << this->ID << endl;
     cout << "Status : " << this->status << endl;
+    cout << "Account created by : "  << this->WCAID << endl;
 }
 
 void Costumer::DisplayInfos()
@@ -108,20 +113,15 @@ void Costumer::DisplayInfos()
 
 void User::DisplayInfos()
 {
+    // cout << "merde" << endl;
     this->ADisplayInfos();
 }
 
-void InitialiseUserList()
+
+string GetName()
 {
-    char a[20]; //name
-    char b[20]; // db
-    char c[20]; //rd
-    char f[20]; 
-    int d,e; 
-    
-    std::ifstream fileC("files/user.txt");
-    for (;fileC >> a >> b >> d >> e >> c;) UserList.add(User(a,b,d,Status(e),c));
-    fileC.close();
+    string name;
+    std::cout << "Enter name " << std::endl;
+    std::cin >> name;
+    return string(name);
 }
-
-

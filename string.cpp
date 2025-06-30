@@ -6,6 +6,40 @@ std::ostream& operator<<(std::ostream& flux,const string& st)
     return flux;
 }
 
+std::istream& operator>>(std::istream& flux, string& st)
+{
+    int bufferCap = 20;
+    int bufferlength = 0;
+    char * buffer = (char*) malloc(sizeof(char) * bufferCap);
+    char c;
+    auto lambda = [&c]() 
+    {
+        if(c == '\n' || c == '\t' || c == '\r' || c == EOF) return false;
+        else return true;
+    };
+
+    while(flux.get(c) && lambda())
+    {
+        if(bufferlength + 1 >= bufferCap)
+        {
+            bufferCap *= 2;
+            char* Nbuffer = (char*) malloc(sizeof(char) * bufferCap);
+            for(int i = 0; i < bufferlength; i++) Nbuffer[i] = buffer[i];
+            free(buffer);
+            buffer = Nbuffer;
+            free(Nbuffer);
+        }
+        buffer[bufferlength++] = c;
+    }
+    buffer[bufferlength] = '\0';
+    // if(st.String != nullptr) free(st.String);
+    st.~string();
+    st.copy(buffer);
+    free(buffer);
+
+    return flux;
+}
+
 void string::copy(const char * st)
 {
     int len;
@@ -19,7 +53,8 @@ void string::copy(const char * st)
 
     for(int i = 0; st[i] != '\0'; i++)
     {
-        this->String[i] = st[i];
+        if(st[i] != '/') this->String[i] = st[i];
+        else this->String[i] = ' ';
     }
 }
 

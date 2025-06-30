@@ -1,15 +1,15 @@
 #pragma once 
 #include "string.h"
+#include "vector.h"
 
 class BookCategory
 {
     public:
         string CategoryName;
-        string CategoryDescription = "none";
+        string CategoryDescription;
 
     public:
-        BookCategory(const string& Name, const string& Description) : CategoryName(Name), CategoryDescription(Description) {}
-        BookCategory(const string& Name) : CategoryName(Name) {}
+        BookCategory(const string& Name, const string& Description = "none") : CategoryName(Name), CategoryDescription(Description) {}
 
     public:
         void AddDescription(const string& Description) { CategoryDescription = Description; }
@@ -34,6 +34,7 @@ class book
 
 vector<book> BookList;
 vector<BookCategory> Categorylist;
+
 void InitialiseBookList();
 void InitialiseCategoryList();
 

@@ -5,13 +5,14 @@
 #include <mutex>
 #include<fstream>
 
-// std::mutex usernum,cosnum;
+static std::mutex usernum,cosnum;
 
 enum class Status
 {
-    Admin = 0,
+    Admin,
     Simp,
-    Cos
+    Cos,
+    Proprio
 };
 
 
@@ -36,6 +37,7 @@ class Account
         int Age;
         string ID;
         Status status;
+        string WCAID; // id of the account that created this account
 
     public:
         // virtual void IdGeneration() = 0;
@@ -45,7 +47,7 @@ class Account
 
     public:
         Account() {}
-        Account(const string& name, int age, const string& DB)  : Name(name), Age(age), DateofBirth(DB) {}
+        Account(const string& name, int age, const string& DB,const string& wcaid)  : Name(name), Age(age), DateofBirth(DB), WCAID(wcaid) {} 
 
     protected:
         void copy(const Account& other);        
@@ -76,7 +78,7 @@ class Account
                     temp[2] = 'M';
                     temp[3] = 'I';
                 }
-                else
+                else if(status == Status::Cos)
                 {
                     temp[0] = 'C';
                     temp[1] = 'O';
@@ -132,7 +134,7 @@ class Costumer : public Account
 
     public:
         Costumer() { IncrementNum(); }
-        Costumer(const string& name, const int& age, const string& DB, const string& RD, const string& Id = "none") : Account(name,age,DB), RegistrationDate(RD)
+        Costumer(const string& name, const int& age, const string& DB, const string& RD,const string& wcaid ,const string& Id = "none") : Account(name,age,DB,wcaid), RegistrationDate(RD)
         {
             this->status = Status::Cos;
             int temp = Costumer::NumberofCostumers;
@@ -152,7 +154,7 @@ class Costumer : public Account
 
     public:
         void operator=(const Costumer&);
-        void operator()(const string& name, const int& age, const string& DB, const string& RD, const string& Id = "none");
+        void operator()(const string& name, const int& age, const string& DB, const string& RD,const string& wacid ,const string& Id = "none");
         void DisplayInfos();
 
 };
@@ -166,7 +168,7 @@ class User : public Account
 
     public:
         User() { IncrementNum(); }
-        User(const string& name, const string& DB, const int& age, const Status& stat = Status(1), const string& Id = "none") : Account(name,age,DB)
+        User(const string& name, const string& DB, const int& age, const string& wcaid ,const Status& stat = Status(1),const string& Id = "none") : Account(name,age,DB,wcaid)
         {
             this->status = stat;
             IncrementNum();
@@ -180,7 +182,7 @@ class User : public Account
 
     public:
         void operator=(const User&);
-        void operator()(const string& name, const string& DB, const int& age, const Status& stat = Status(1), const string& Id = "none");
+        void operator()(const string& name, const string& DB, const int& age,const string& wacid ,const Status& stat = Status(1), const string& Id = "none");
 
     public:
         void DisplayInfos();
@@ -191,9 +193,60 @@ std::ostream& operator<<(std::ostream& flux, const Status& status);
 
 static vector<User> UserList;
 static vector<Costumer> CostumerList;
-void InitialiseUserList();
-void InitialiseCostumerList();
-static void some()
+
+static void DisplayAllUsers()
 {
-    UserList.add(User("ad","ad",1,Status(0),"d"));
+    // std::cout << "merde1" << std::endl;
+    for(int i = 0; i < UserList.size; i++)
+    {
+        // std::cout << "merde2" << std::endl;
+        UserList[i].DisplayInfos();
+        std::cout << std::endl << std::endl;
+    }
 }
+
+static void InitialiseUserList()
+{
+    char a[20]; //name
+    char b[20]; // db
+    char c[20]; //rd
+    char wacid[20];
+    char f[20]; 
+    int d,e; 
+    // User user;
+
+    std::ifstream fileU("files/user.txt");
+    while (fileU >> a >> b >> d >> wacid >> e >>c) UserList.add(User(a,b,d,wacid,Status(e),c));
+    fileU.close();
+    // std::cout << "list : " << wacid << std::endl;
+}
+
+static void InitialiseCostumerList()
+{
+    char name[20];
+    int age;
+    char DB[20];
+    char RD[20];
+    char ID[8];
+    char w[20];
+
+    std::ifstream fileC("files/costumer.txt");
+    while(fileC >> name >> age >> DB >> RD >> w >>ID) CostumerList.add(Costumer(name,age,DB,RD,w,ID));
+    fileC.close();
+}
+
+static void DisplayAllCostumer()
+{
+    for(int i = 0; i < CostumerList.size; i++)
+    {
+        CostumerList[i].DisplayInfos();
+        std::cout << std::endl << std::endl;
+    }
+}
+
+string GetName();
+
+// static void CreateNewAccount(Const)
+// {
+
+// }

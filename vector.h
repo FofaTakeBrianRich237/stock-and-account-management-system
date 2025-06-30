@@ -53,7 +53,6 @@ class vector
     {
         if( this->array != nullptr) 
         {
-            // std::cout << "not in" << std::endl;
             auto lambda = [this](type* init,const type* final)
             {
                 for(int i = 0; i < this->size; i++) init[i] = final[i];
@@ -62,18 +61,17 @@ class vector
             type * temp = (type*) malloc(sizeof(type) * size);
             lambda(temp,array);
 
-            array = nullptr;
-            array = (type*) malloc(sizeof(type) * ++size); 
+            free(array);
+            array = (type*) malloc(sizeof(type) * (size+1)); 
             lambda(array,temp);
+            size++;
             array[size - 1] = NewVal;
 
             free(temp);
         }
         else 
         {
-            // std::cout << "in" << std::endl;
-            size++;
-            array = (type*) malloc(sizeof(type));
+            array = (type*) malloc(sizeof(type) * ++size);
             array[0] = NewVal;
         }
     }
