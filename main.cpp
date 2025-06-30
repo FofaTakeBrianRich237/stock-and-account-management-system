@@ -8,19 +8,26 @@ using std::cin;
 
 int Costumer::NumberofCostumers = 0;
 int User::NumUsers = 0;
+int SimpleUser::NumSimpleUsers = 0;
+int AdminUser::NumAdminUsers = 0;
+
 int BorrowedBooksData::TotalBorrowed;
 vector<string> Costumer::UnusedCId;
-vector<string> User::UnusedUId;
+vector<string> SimpleUser::UnusedSUID;
+vector<string> AdminUser::UnusedAUID;
+// vector<string> User::UnusedUId;
 
 int main()
 {
 
-    InitialiseUserList();
+    InitialiseAdminUserList();
+    InitialiseSimpleUserList();
     // InitialiseCostumerList();
     // DisplayAllCostumer();
-    DisplayAllUsers();
-    // cout << "massa : " << CostumerList[0].WCAID << endl;
-    // cout << GetName() << endl;
+    DisplayAllSimpleUsers();
+    cout << "----------------------------" << endl;
+    DisplayAllAdminUsers();
+    // cout << SimpleUserList.size << endl;
     return 0;
     
 }

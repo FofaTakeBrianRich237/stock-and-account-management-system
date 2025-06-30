@@ -84,14 +84,36 @@ void Costumer::operator()(const string& name, const int& age, const string& DB, 
     else ID = Id;
 }
 
-void User::operator()(const string& name, const string& DB, const int& age, const string& wcaid,const Status& stat, const string& Id)
+// void User::operator()(const string& name, const string& DB, const int& age, const string& wcaid,const Status& stat, const string& Id)
+// {
+//     this->status = stat;
+//     this->Age = age;
+//     this->DateofBirth = DB;
+//     this->Name = name;
+//     this->WCAID = wcaid;
+//     if(Id == "none") Account::IdGeneration(*this,User::NumUsers,User::UnusedUId,this->status);
+//     else ID = Id;
+// }
+
+void SimpleUser::operator()(const string& name, const string& DB, const int& age, const string& wcaid ,const string& Id,const Status& stat)
 {
     this->status = stat;
     this->Age = age;
     this->DateofBirth = DB;
     this->Name = name;
     this->WCAID = wcaid;
-    if(Id == "none") Account::IdGeneration(*this,User::NumUsers,User::UnusedUId,this->status);
+    if(Id == "none") Account::IdGeneration(*this,SimpleUser::NumSimpleUsers,SimpleUser::UnusedSUID,this->status);
+    else ID = Id;
+}
+
+void AdminUser::operator()(const string& name, const string& DB, const int& age, const string& wcaid ,const string& Id,const Status& stat)
+{
+    this->status = stat;
+    this->Age = age;
+    this->DateofBirth = DB;
+    this->Name = name;
+    this->WCAID = wcaid;
+    if(Id == "none") Account::IdGeneration(*this,AdminUser::NumAdminUsers,AdminUser::UnusedAUID,this->status);
     else ID = Id;
 }
 
