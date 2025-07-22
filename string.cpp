@@ -14,7 +14,7 @@ std::istream& operator>>(std::istream& flux, string& st)
     char c;
     auto lambda = [&c]() 
     {
-        if(c == '\n' || c == '\t' || c == '\r' || c == EOF) return false;
+        if(c == '\n' || c == '\t' || c == '\r' || c == EOF || c == '\0') return false;
         else return true;
     };
 
@@ -48,7 +48,7 @@ void string::copy(const char * st)
 
     for(len = 0; st[len] != '\0'; len++);
     this->String = nullptr;
-    this->String = (char*) malloc(sizeof(char) * len);
+    this->String = (char*) malloc(sizeof(char) * (len+1));
     this->length = len;
 
     for(int i = 0; st[i] != '\0'; i++)
@@ -56,6 +56,7 @@ void string::copy(const char * st)
         if(st[i] != '/') this->String[i] = st[i];
         else this->String[i] = ' ';
     }
+    this->String[len] = '\0';
 }
 
 bool operator==(const string& init, const string& other)
@@ -80,7 +81,7 @@ bool operator==(const string& init, const string& other)
 bool operator!=(const string& init, const string& other)
 {
     bool same  = false;
-    if(init.length != other.length) same = true;
+    if(init.length != other.length) {std::cout << "merde" << std::endl;same = true;}
     else 
     {
         for(int i = 0; i < init.length; i++) 

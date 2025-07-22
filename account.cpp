@@ -95,7 +95,7 @@ void Costumer::operator()(const string& name, const int& age, const string& DB, 
 //     else ID = Id;
 // }
 
-void SimpleUser::operator()(const string& name, const string& DB, const int& age, const string& wcaid ,const string& Id,const Status& stat)
+void SimpleUser::operator()(const string& name, const string& DB, const int& age, const string& wcaid , const string& PW, const string& Id,const Status& stat)
 {
     this->status = stat;
     this->Age = age;
@@ -104,9 +104,11 @@ void SimpleUser::operator()(const string& name, const string& DB, const int& age
     this->WCAID = wcaid;
     if(Id == "none") Account::IdGeneration(*this,SimpleUser::NumSimpleUsers,SimpleUser::UnusedSUID,this->status);
     else ID = Id;
+    if(PW == "none") GeneratePassword();
+    else password = PW;
 }
 
-void AdminUser::operator()(const string& name, const string& DB, const int& age, const string& wcaid ,const string& Id,const Status& stat)
+void AdminUser::operator()(const string& name, const string& DB, const int& age, const string& wcaid , const string& PW, const string& Id,const Status& stat)
 {
     this->status = stat;
     this->Age = age;
@@ -115,6 +117,8 @@ void AdminUser::operator()(const string& name, const string& DB, const int& age,
     this->WCAID = wcaid;
     if(Id == "none") Account::IdGeneration(*this,AdminUser::NumAdminUsers,AdminUser::UnusedAUID,this->status);
     else ID = Id;
+    if(PW == "none") GeneratePassword();
+    else password = PW;
 }
 
 void Account::ADisplayInfos()
@@ -139,6 +143,53 @@ void User::DisplayInfos()
     this->ADisplayInfos();
 }
 
+void User::GeneratePassword()
+{
+    auto StrongPassword = [this](string& PW)
+    {
+        bool LowerCaseFound = false;
+        bool UpperCaseFound = false;
+        bool NumbersFound = false;
+        
+        cout << "Enter password" << endl;
+        cin >> PW;
+
+        for(int i = 0; PW[i] != '\0'; i++) 
+        {
+            if(PW[i] >= 'a' && PW[i] <= 'z') LowerCaseFound = true;
+            else if(PW[i] >= 'A' && PW[i] <= 'Z') UpperCaseFound = true; 
+            else if(PW[i] >= '0' && PW[i] <= '9') NumbersFound = true;
+            // else { cout << "special charaters not aloud" << endl; return false;}
+            if(LowerCaseFound && UpperCaseFound && NumbersFound) { password = PW; return true;}
+        }
+
+        if(!LowerCaseFound) cout << "Need at least one lower case letter" << endl;
+        else if(!UpperCaseFound) cout << "Need at least one upper case letter" << endl; 
+        else cout << "Need at least one digit number" << endl;
+
+        return false;
+    };
+
+    for(string temp; !StrongPassword(temp) ; );
+}
+
+void User::PassWordReste()
+{
+    string temp;
+    bool found;
+    do 
+    {
+        cout << "Enter current password" << endl;
+        cin >> temp;
+        if(temp == "exit") {found = false; break;}
+        cout << temp.length << endl;
+    }
+    while (password != temp);
+    found = true;
+    cout << "------------Password Rest------------" << endl;
+    if(found) GeneratePassword();
+}
+
 
 string GetName()
 {
@@ -147,3 +198,12 @@ string GetName()
     std::cin >> name;
     return string(name);
 }
+
+
+// string GetDb()
+// {
+//     int day,month,year;
+//     cout << "Date of birth" << endl;
+//     cout << "Enter the day" << endl;
+//     day 
+// }

@@ -38,6 +38,7 @@ class Account
         string ID;
         Status status;
         string WCAID; // id of the account that created this account
+        vector<string> UnAccesedFunctionIDs;
 
     public:
         // virtual void IdGeneration() = 0;
@@ -64,27 +65,13 @@ class Account
             else
             {
                 char * temp = (char*) malloc(sizeof(char) * 7);
-                if( status == Status::Simp)
-                {
-                    temp[0] = 'S';
-                    temp[1] = 'I';
-                    temp[2] = 'M';
-                    temp[3] = 'P';
-                }
-                else if(status == Status::Admin)
-                {
-                    temp[0] = 'A';
-                    temp[1] = 'D';
-                    temp[2] = 'M';
-                    temp[3] = 'I';
-                }
-                else if(status == Status::Cos)
-                {
-                    temp[0] = 'C';
-                    temp[1] = 'O';
-                    temp[2] = 'S';
-                    temp[3] = 'T';
-                }
+
+                auto StatusFilling = [temp] (const string& status) { for(int i = 0; i < 4; i++) temp[i] = status.String[i]; };
+
+                if( status == Status::Simp) StatusFilling("SIMP");
+                else if(status == Status::Admin) StatusFilling("ADMI");
+                else if(status == Status::Cos) StatusFilling("COST");
+                
                 int val;
                 auto lambda = [temp,&val] (const int& numZero,int tval)  
                 {
@@ -129,8 +116,6 @@ class Costumer : public Account
         string RegistrationDate;
         static vector<string> UnusedCId;
         static int NumberofCostumers;
-        vector<BorrowedBooksData> BorrowedBooksList;
-        
 
     public:
         Costumer() { IncrementNum(); }
@@ -138,15 +123,9 @@ class Costumer : public Account
         {
             int temp = Costumer::NumberofCostumers;
             IncrementNum();
-            if(Id == "none") 
-            {
-                // std::thread GenerateCId(&Account::IdGeneration,*this,Costumer::NumberofCostumers,Costumer::UnusedCId,this->status);
-                Account::IdGeneration(*this,Costumer::NumberofCostumers,Costumer::UnusedCId,this->status);
-                // if(GenerateCId.joinable()) GenerateCId.detach();
-            }
+            if(Id == "none") Account::IdGeneration(*this,Costumer::NumberofCostumers,Costumer::UnusedCId,this->status);
             else ID = Id;
         }
-
 
     private:
         static void IncrementNum() {  Costumer::NumberofCostumers++; }
@@ -159,16 +138,19 @@ class Costumer : public Account
 };
 
 
-class User : public Account
+class User :  public Account
 {
     public:
-        static int NumUsers;
+        static int NumUsers; 
+        string password;
 
     public:
         User() { IncrementNum(); }
-        User(const string& name, const string& DB, const int& age, const string& wcaid ,const Status& stat,const string& Id) : Account(name,age,DB,wcaid,stat)
-        {
-            IncrementNum();
+        User(const string& name, const string& DB, const int& age, const string& wcaid ,const Status& stat,const string& Id,const string PW) : Account(name,age,DB,wcaid,stat) , password(PW)
+        { 
+            IncrementNum(); 
+            if(PW == "none") GeneratePassword();
+            else password = PW;
         }
         
     private:
@@ -177,10 +159,11 @@ class User : public Account
 
     public:
         void operator=(const User&);
-        // void operator()(const string& name, const string& DB, const int& age, const string& wcaid,const Status& stat, const string& Id= "none");
 
     public:
         void DisplayInfos();
+        void GeneratePassword();
+        void PassWordReste();
         
 };
 
@@ -191,7 +174,7 @@ class SimpleUser : public User
         static vector<string> UnusedSUID;
 
     public:
-        SimpleUser(const string& name, const string& DB, const int& age, const string& wcaid ,const string& Id = "none",const Status& stat = Status::Simp) : User(name,DB,age,wcaid,stat,Id)
+        SimpleUser(const string& name, const string& DB, const int& age, const string& wcaid , const string& PW = "none", const string& Id = "none",const Status& stat = Status::Simp) : User(name,DB,age,wcaid,stat,Id,PW)
         {
             IncrementSNum();
             if(Id == "none") Account::IdGeneration(*this,SimpleUser::NumSimpleUsers,SimpleUser::UnusedSUID,this->status);
@@ -202,7 +185,7 @@ class SimpleUser : public User
         static void IncrementSNum() { NumSimpleUsers++; }
     
     public:
-        void operator()(const string& name, const string& DB, const int& age, const string& wcaid ,const string& Id = "none",const Status& stat = Status::Simp);
+        void operator()(const string& name, const string& DB, const int& age, const string& wcaid , const string& PW = "none", const string& Id = "none",const Status& stat = Status::Simp);
 };
 
 class AdminUser : public User
@@ -212,7 +195,7 @@ class AdminUser : public User
         static vector<string> UnusedAUID;
 
     public:
-        AdminUser(const string& name, const string& DB, const int& age, const string& wcaid ,const string& Id = "none",const Status& stat = Status::Admin) : User(name,DB,age,wcaid,stat,Id)
+        AdminUser(const string& name, const string& DB, const int& age, const string& wcaid , const string& PW = "none", const string& Id = "none",const Status& stat = Status::Admin) : User(name,DB,age,wcaid,stat,Id,PW)
         {
             IncrementANum();
             if(Id == "none") Account::IdGeneration(*this,AdminUser::NumAdminUsers,AdminUser::UnusedAUID,this->status);
@@ -223,7 +206,7 @@ class AdminUser : public User
         static void IncrementANum() { NumAdminUsers++; }
     
     public:
-        void operator()(const string& name, const string& DB, const int& age, const string& wcaid ,const string& Id = "none",const Status& stat = Status::Admin);
+        void operator()(const string& name, const string& DB, const int& age, const string& wcaid , const string& PW = "none", const string& Id = "none",const Status& stat = Status::Admin);
 };
 
 std::ostream& operator<<(std::ostream& flux, const Status& status);
@@ -256,11 +239,12 @@ static void InitialiseSimpleUserList()
     char DB[20]; // db
     char ID[20]; //rd
     char WACID[20]; 
+    char password[20];
     int age; 
     // User user;
     // std::cout << 'in' << std::endl;
     std::ifstream fileU("files/simpleuser.txt");
-    while (fileU >> name >> DB >> age >> WACID >> ID) SimpleUserList.add(SimpleUser(name,DB,age,WACID,ID));
+    while (fileU >> name >> DB >> age >> WACID >> password >> ID) SimpleUserList.add(SimpleUser(name,DB,age,WACID,password,ID));
     fileU.close();
     // std::cout << "list : " << wacid << std::endl;
 }
@@ -271,11 +255,12 @@ static void InitialiseAdminUserList()
     char DB[20]; // db
     char ID[20]; //rd
     char WACID[20]; 
+    char password[20];
     int age; 
     // User user;
     // std::cout << 'in' << std::endl;
     std::ifstream fileU("files/adminuser.txt");
-    while (fileU >> name >> DB >> age >> WACID >> ID) AdminUserList.add(AdminUser(name,DB,age,WACID,ID));
+    while (fileU >> name >> DB >> age >> WACID >> password >> ID) AdminUserList.add(AdminUser(name,DB,age,WACID,password,ID));
     fileU.close();
     // std::cout << "list : " << wacid << std::endl;
 }
@@ -303,9 +288,26 @@ static void DisplayAllCostumer()
     }
 }
 
-string GetName();
-
-// static void CreateNewAccount(Const)
+// static void InitialiseCostumerUnusedCID()
 // {
 
+// }
+
+// string GetName();
+// string GetDb();
+// int Age();
+// string GetPassword();
+
+// static void CreateNewUserAccount(const Status& status, const string& ID)
+// {
+//     if(status != Status::Cos && status != Status::Simp)
+//     {
+//         int choice;
+
+//         std::cout << "Choose account type" << std::endl;
+//         std::cout << "Admin : 1" << std::endl << "Simple : 1" << std::endl;
+
+        
+
+//     }
 // }

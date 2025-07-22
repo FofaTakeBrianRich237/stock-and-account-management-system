@@ -10,7 +10,8 @@ class vector
 
     public :
     vector() {}
-    ~vector() {free(array);}
+    vector(const int& Size) : size(Size) { array = (type*) malloc(sizeof(type) * size); }
+    ~vector() {free(array); size = 0;}
 
     public :
     type& At(const int& pos)
@@ -97,6 +98,13 @@ class vector
         else std::cout << "no element to pop" << std::endl;
     }
 
+    void reset(const int& NewSize = 0)
+    {
+        free(array);
+        size = NewSize;
+        array = (type*) malloc(sizeof(type) * size);
+    }
+
     class Iterator
     {
         public:
@@ -143,6 +151,15 @@ class vector
         {
             std::cout << "invalid position" << std::endl;
             return array[this->size];
+        }
+    }
+
+    void operator()(const int& Size)
+    {
+        if(array == nullptr) 
+        {
+            array = (type*) malloc(sizeof(type) * Size);
+            size = Size;
         }
     }
 
