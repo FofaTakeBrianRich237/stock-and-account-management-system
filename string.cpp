@@ -138,3 +138,36 @@ bool operator!=(const string& init, const char* st)
 
     return same;
 }
+
+void string::operator+=(const string& other)
+{
+    string temp = *this;
+    int i;
+
+    this->length = temp.length+other.length;
+    this->String = (char*) malloc(sizeof(char) * (this->length));
+    
+    for(i = 0; i < temp.length; i++) this->String[i] = temp[i];
+    for(int j = i,i = 0; i < other.length; j++,i++) this->String[j] = other.String[i];
+}
+
+string operator+(const string& one,const string& two)
+{
+    string temp;
+    int i = 0;
+    
+    temp.length = one.length + two.length;
+    temp.String = (char*) malloc(sizeof(char) * temp.length);
+    for( ; i < one.length; i++) temp[i] = one.String[i];
+    for(int j = i, i = 0; i < two.length; j++,i++) temp[j] = two.String[i];
+
+    return temp;
+}
+
+void string::push_back(const char& ch)
+{
+    string temp = *this;
+    this->String = (char*) malloc(sizeof(char) * (++this->length));
+    for(int i = 0; i < temp.length; i++) this->String[i] = temp[i];
+    this->String[this->length-1] = ch;
+}

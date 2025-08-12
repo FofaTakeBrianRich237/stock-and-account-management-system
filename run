@@ -1,0 +1,2 @@
+#!/bin/bash
+g++ -o sup main.cpp string.cpp  account.cpp  Transaction.cpp 

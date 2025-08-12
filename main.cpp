@@ -1,5 +1,5 @@
 #include "account.h"
-#include<fstream>
+#include "Transaction.h"
 
 using std::cout;
 using std::endl;
@@ -18,15 +18,16 @@ vector<string> AdminUser::UnusedAUID;
 
 int main()
 {
-
+ 
+    
     InitialiseAdminUserList();
     InitialiseSimpleUserList();
     InitialiseCostumerList();
+    InitialiseUnusedIDs();
     DisplayAllAdminUsers();
     DisplayAllSimpleUsers();
-    DisplayAllCostumer();
+    DisplayAllCostumers();
 
-    
     return 0;
     
 }

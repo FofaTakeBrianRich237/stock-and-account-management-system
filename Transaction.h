@@ -47,10 +47,10 @@ public:
     void ajouterCommande(const Commande& cmd);
     bool annulerCommande(const std::string& desc);
     bool modifierCommande(const std::string& desc, double nouveauMontant);
-    void changerStatut(const );
-    void afficherToutesTransactions(const);
-    void afficherTransactionSpecifique(const);
-    void StatistiquesDesTransaction(const);
+    // void changerStatut(const );
+    // void afficherToutesTransactions(const);
+    // void afficherTransactionSpecifique(const);
+    // void StatistiquesDesTransaction(const);
 
 
     double getTotal() const;
