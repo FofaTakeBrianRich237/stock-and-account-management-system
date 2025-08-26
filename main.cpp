@@ -18,15 +18,16 @@ vector<string> AdminUser::UnusedAUID;
 
 int main()
 {
- 
     
-    InitialiseAdminUserList();
-    InitialiseSimpleUserList();
-    InitialiseCostumerList();
-    InitialiseUnusedIDs();
-    DisplayAllAdminUsers();
-    DisplayAllSimpleUsers();
-    DisplayAllCostumers();
+    // InitialiseAdminUserList();
+    // InitialiseSimpleUserList();
+    // InitialiseCostumerList();
+    // InitialiseUnusedIDs();
+    // DisplayAllAdminUsers();
+    // DisplayAllSimpleUsers();
+    // DisplayAllCostumers();
+
+
 
     return 0;
     

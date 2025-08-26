@@ -50,8 +50,9 @@ struct Date
     friend std::ostream& operator << (std::ostream& flux,const Date& date) { flux << date.day << "/" << date.month << "/" << date.year; return flux; }
 };
 static Date Actual_Date(31,7,2025);
+static Date Date_of_today;
 
-
+//--------------Class declarations-----------------
 class Acount
 {
     public:
@@ -139,6 +140,8 @@ class Acount
          
 };
 
+static Acount WhoIsIn;
+
 class Costumer : public Acount
 {
     public:
@@ -198,6 +201,12 @@ class SimpleUser : public User
             if(Id == "none") Acount::IdGeneration(*this,SimpleUser::NumSimpleUsers,SimpleUser::UnusedSUID,this->status);
             else ID = Id;
         }
+
+        SimpleUser(const SimpleUser& other) : User(other.Name,other.DateofBirth,other.Age,WhoIsIn.ID,Status::Simp,"none",other.password,Date_of_today)
+        {
+            IncrementSNum();
+            Acount::IdGeneration(*this,SimpleUser::NumSimpleUsers,SimpleUser::UnusedSUID,this->status);
+        }
     
     private:
         static void IncrementSNum() { NumSimpleUsers++; }
@@ -219,6 +228,8 @@ class AdminUser : public User
             if(Id == "none") Acount::IdGeneration(*this,AdminUser::NumAdminUsers,AdminUser::UnusedAUID,this->status);
             else ID = Id;
         }
+
+        
     
     private:
         static void IncrementANum() { NumAdminUsers++; }
@@ -226,13 +237,19 @@ class AdminUser : public User
     public:
         void operator()(const string& name, const Date& DB, const int& age, const string& wcaid , const Date& RD, const string& PW = "none", const string& Id = "none",const Status& stat = Status::Admin);
 };
+//--------------------------------------------------
 
 
+
+
+//-----------Users(simple/admin) and Costumers lists----------
 static vector<User> SimpleUserList;
 static vector<User> AdminUserList;
 static vector<Costumer> CostumerList;
+//------------------------------------------------------------
 
 //--------------Infos display function for Constumers/Users---------------
+ //Display the list of simple users from the static vector SimpleUserslist
 static void DisplayAllSimpleUsers()
 {
     for(int i = 0; i < SimpleUserList.size; i++)
@@ -242,6 +259,7 @@ static void DisplayAllSimpleUsers()
     }
 }
 
+ //Display the list of Admin users from the static vector AdminUserslist
 static void DisplayAllAdminUsers()
 {
     for(int i = 0; i < AdminUserList.size; i++)
@@ -251,6 +269,7 @@ static void DisplayAllAdminUsers()
     }
 }
 
+ //Display the list of costumers from the static vector Costumerslist
 static void DisplayAllCostumers()
     {
         for(int i = 0; i < CostumerList.size; i++)
@@ -314,6 +333,10 @@ static void InitialiseCostumerList()
 }
 //----------------------------------------------------------------------------------------
 
+static void SaveSimpleUserList();
+static void SaveAdminUserList();
+static void SaveCostumerList();
+
 //------------Unused Users,Costumer IDs list fiiling------------------
 std::istream& getline(std::istream& is, string& st); // overloading getline function tu work with our string class
 
@@ -350,6 +373,7 @@ static void InitialiseUnusedIDs()
 }
 //----------------------------------------------------------------------
 
+static void SaveUnusedUserList();
 
 string GetName();
 Date GetDb();
@@ -358,26 +382,22 @@ int GetAge();
 
 //-----------Acount creation functions-----------
   //-----Costumer acount creation function
-   //WCAID is the string containing the ID of the Acount that creat the Costumer Acount
-   //Date_of_today stores the actual registration date of the costumer
-static void CreateNewCostumer(const string& WCAID,const Date& Date_of_today)
+static void CreateNewCostumer()
 {
-    CostumerList.add(Costumer(GetName(),GetAge(),GetDb(),Date_of_today,WCAID));
+    CostumerList.add(Costumer(GetName(),GetAge(),GetDb(),Date_of_today,WhoIsIn.ID));
 }
 
   //------Simple user acount user creation fucntion
-   //----WCAID is the string containing the ID of the Acount that creat the Simple user Acount
-   //Date_of_today stores the actual registration date of Simple user
-static void CreateNewSimpleUser(const string& WCAID,const Date& Date_of_today)
+static void CreateNewSimpleUser()
 {
-    SimpleUserList.add(SimpleUser(GetName(),GetDb(),GetAge(),WCAID,Date_of_today,WCAID));
+    if(WhoIsIn.status == Status::Admin || WhoIsIn.status == Status::Proprio) SimpleUserList.add(SimpleUser(GetName(),GetDb(),GetAge(),WhoIsIn.ID,Date_of_today));
+    else std::cout << "Operation unsuccessfull Because you don't have enough rights" << std::endl;
 }
 
  //------Admin user acount creation function
-  //----WCAID is the string containing the ID of the Acount that creat the Admin user Acount
-  //Date_of_today stores the actual registration date of the Admin user
-static void CreateNewAdminUser(const string& WCAID,const Date& Date_of_today)
+static void CreateNewAdminUser()
 {
-    AdminUserList.add(AdminUser(GetName(),GetDb(),GetAge(),WCAID,Date_of_today,WCAID));
+    if(WhoIsIn.status == Status::Admin || WhoIsIn.status == Status::Proprio) AdminUserList.add(AdminUser(GetName(),GetDb(),GetAge(),WhoIsIn.ID,Date_of_today));
+    else std::cout << "Operation unsuccessfull Because you don't have enough rights" << std::endl;
 }
 //------------------------------------------------

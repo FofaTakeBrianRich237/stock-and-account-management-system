@@ -158,8 +158,6 @@ void User::PassWordReste()
     if(found) GeneratePassword();
 }
 
-
-
 string GetName()
 {
     string name;
